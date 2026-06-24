@@ -5,21 +5,40 @@ Proyek ini merupakan analisis komparatif dalam memprediksi permintaan penjualan 
 Dalam industri ritel, memprediksi jumlah penjualan di masa depan sangat penting untuk manajemen inventaris. Proyek ini bertujuan untuk membandingkan performa arsitektur berbasis tree (XGBoost) yang ringan dan dapat diinterpretasikan, dengan arsitektur jaringan saraf tiruan (LSTM) yang dirancang khusus untuk menangkap pola sekuensial yang kompleks.
 
 ## 🛠️ Teknologi yang Digunakan
-Bahasa: Python 3
-Manipulasi Data: Pandas, NumPy
-Machine Learning: Scikit-Learn, XGBoost
-Deep Learning: TensorFlow / Keras
-Visualisasi: Matplotlib
+- Data: [Store Item Demand Forecasting Dataset](https://www.kaggle.com/datasets/dhrubangtalukdar/store-item-demand-forecasting-dataset)
+- Bahasa: Python 3
+- Manipulasi Data: Pandas, NumPy
+- Machine Learning: Scikit-Learn, XGBoost
+- Deep Learning: TensorFlow / Keras
+- Visualisasi: Matplotlib
 
 ## 🧠 Metodologi & Arsitektur
 ### 1. Pendekatan XGBoost (Machine Learning)
-Model berbasis pohon algoritma ini diformat untuk menerima data tabular (2D).
-- Feature Engineering: Menggunakan fungsi shift() untuk membuat variabel historis (lag features) dari 1 hingga 7 hari sebelumnya.
-- Ekstraksi Waktu: Menambahkan fitur waktu seperti hari, bulan, dan penanda akhir pekan (weekend indicator).
-- Keunggulan: Sangat cepat dilatih, tahan terhadap outlier, dan menyediakan Feature Importance untuk interpretasi bisnis.
+- Akses dataset : menggunakan Dataset Kaggel
+- Pengolahan data :
+  - Mengubah format tanggal
+  - Merangkum data penjualan
+  - Memnambah fitur tahun, bulan, hari, dan hari dalam minggu (0 = Senin hingga 6 = Minggu)
+  - Windowing : menggunakan teknik ACF & PCF untuk menentukan panjang window
+  - Membagi data : 4 tahun pelatihan dan 1 tahun test
+- Pelatihan model XGBoost:
+  - n_estimators = 100
+  - learning rate = 0.1
+- Evaluasi
 
 ### 2. Pendekatan LSTM (Deep Learning)
-Model jaringan saraf ini dirancang untuk memproses data berurutan dalam format 3D (Samples, Time Steps, Features).
-- Scaling: Normalisasi wajib menggunakan MinMaxScaler (rentang 0-1) untuk mencegah ledakan loss/error komputasi (gradient explosion).
-- Sliding Window: Memotong deret waktu menjadi "jendela" kecil yang bergerak maju.
-- Inverse Transform: Mengembalikan hasil tebakan model (0-1) ke wujud nilai asli (volume penjualan) sebelum dievaluasi.
+- Akses dataset : menggunakan Dataset Kaggel
+- Mengunci keacakan di tingkat library, Numpy, dan TensorFlow
+- Pengolahan data :
+  - Mengubah format tanggal
+  - Merangkum data penjualan
+  - Memnambah fitur tahun, bulan, hari, dan hari dalam minggu (0 = Senin hingga 6 = Minggu)
+  - Windowing : menggunakan teknik Sliding window dengan jumlah timestep 7
+  - Membagi data : 4 tahun pelatihan dan 1 tahun test
+- Membangun model sederhana
+- Penggunaan Callback (Optional)
+- Evaluasi
+
+## 📈 Hasil Evaluasi
+- XGBoost Menghasilkan nilai MAPE sebesar **0.1%**
+- LSTM Menghasilkan nilai MAPE sebesar **2.03%**
